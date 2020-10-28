@@ -313,8 +313,28 @@ def manhattan_distance(state):
     return distance
 
 
-def linear_conflicts(state):
-    
+def manhattan_last_moves(state):
+    distance = 0
+    a = state.size * state.size - 1
+    b = (state.size - 1) * state.size
+    col_a, row_b = 0, 0
+    for i in range(state.size):
+        for j in range(state.size):
+            v = state.matrix[i][j]
+            if v == 0:
+                distance += abs(i - (state.size - 1)) + abs(j - (state.size - 1))
+            else:
+                r = ceil(v / state.size) - 1
+                c = v - r * state.size - 1
+                distance += abs(i - r) + abs(j - c)
+            if v == a:
+                col_a = j
+            if v == b:
+                row_b = i
+    if col_a != state.size - 1 and row_b != state.size - 1:
+        distance += 2
+    return distance
+
 
 def f_euclidean(node):
     return node.path_cost + euclidean_distance(node)
@@ -328,12 +348,8 @@ def f_manhattan_distance(node):
     return node.path_cost + manhattan_distance(node.state)
 
 
-def experimental(state):
-    pass
-
-
 def f_experimental(node):
-    return node.path_cost + experimental(node.state)
+    return node.path_cost + manhattan_last_moves(node.state)
 
 
 def plot_stats(title, xlabel, ylabel, x_labels, x, legend_labels, values):
@@ -497,41 +513,55 @@ def search_algorithms_main():
     pl.show()
 
 
+def benchmark_puzzle(searchs=None, size=3, difficulty=-1, loop=10):
+    if searchs is None:
+        searchs = {'ucs', 'mis', 'man', 'man_lm'}
+
+    original_labels = ['ucs', 'misplaced', 'manhattan', 'manhattan_last_moves']
+    times = [[], [], [], []]
+
+    for i in range(loop):
+        puzzle = PuzzleProblem(size, difficulty=difficulty)
+
+        if 'ucs' in searchs:
+            tic = time.perf_counter()
+            solution, _, _ = graph_search(puzzle, PriorityQueue(ucs))
+            toc = time.perf_counter()
+            times[0].append(toc - tic)
+
+        if 'mis' in searchs:
+            tic = time.perf_counter()
+            solution, _, _ = graph_search(puzzle, PriorityQueue(f_misplaced_tiles))
+            toc = time.perf_counter()
+            times[1].append(toc - tic)
+
+        if 'man' in searchs:
+            tic = time.perf_counter()
+            solution, _, _ = graph_search(puzzle, PriorityQueue(f_manhattan_distance))
+            toc = time.perf_counter()
+            times[2].append(toc - tic)
+
+        if 'man_lm' in searchs:
+            tic = time.perf_counter()
+            _, _, _ = graph_search(puzzle, PriorityQueue(f_experimental))
+            toc = time.perf_counter()
+            times[3].append(toc - tic)
+
+    values = []
+    labels = []
+    for i, v in enumerate(times):
+        if len(v) > 0:
+            values.append(mean(v))
+            labels.append(original_labels[i])
+
+    plt.figure()
+    plt.bar(labels, values)
+    plt.show()
+
+
 def puzzle_main():
-    puzzle = PuzzleProblem(3)
-    # print(misplaced_tiles(puzzle.initial))
-    # puzzle.initial.print_state()
+    benchmark_puzzle(searchs={'man', 'man_lm'}, size=3, difficulty=-1, loop=30)
 
-    ucs_s = []
-    astar_h1 = []
-    astar_h2 = []
-
-    #tic = time.perf_counter()
-    #solution, _, _ = graph_search(puzzle, PriorityQueue(f_experimental))
-    #toc = time.perf_counter()
-    #print(f"A* mine took {toc - tic:0.4f} seconds")
-    tic = time.perf_counter()
-    solution, _, _ = graph_search(puzzle, PriorityQueue(f_manhattan_distance))
-    toc = time.perf_counter()
-    for node in solution.getPath():
-        astar_h2.append(node.action)
-    print(f"A* manhattan took {toc - tic:0.4f} seconds")
-    tic = time.perf_counter()
-    solution, _, _ = graph_search(puzzle, PriorityQueue(f_misplaced_tiles))
-    toc = time.perf_counter()
-    for node in solution.getPath():
-        astar_h1.append(node.action)
-    print(f"A* misplaced took {toc - tic:0.4f} seconds")
-    tic = time.perf_counter()
-    solution, _, _ = graph_search(puzzle, PriorityQueue(ucs))
-    toc = time.perf_counter()
-    for node in solution.getPath():
-        ucs_s.append(node.action)
-    print(f"UCS took {toc - tic:0.4f} seconds")
-    print(len(ucs_s), len(astar_h1), len(astar_h2))
-    # print('exploration matrix')
-    # for node in history:
-    #    print(node.state.matrix, "\n")
 
 
 if __name__ == "__main__":
