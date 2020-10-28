@@ -12,6 +12,7 @@ class NavigationProblem:
         self.initial = initial
         self.initial.goal = goal
         self.goal = goal
+        self.goal.goal = goal
         self.locations = locations
         self.graph = nx.DiGraph() if directed else nx.Graph()
         for cityA, cityB, distance in connections:
@@ -35,6 +36,12 @@ class NavigationState:
         self.city = city
         self.location = location
         self.goal = goal
+
+    def __hash__(self):
+        return hash(self.city)
+
+    def __eq__(self, other):
+        return self.city == other.city
 
 
 class PuzzleState:
@@ -292,7 +299,7 @@ def ucs(node):
 
 
 def euclidean_distance(node):
-    return np.linalg.norm(np.asarray(node.goal.location) - np.asarray(node.state.location))
+    return np.linalg.norm(np.asarray(node.state.goal.location) - np.asarray(node.state.location))
 
 
 def misplaced_tiles(state):

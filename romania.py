@@ -67,33 +67,33 @@ if __name__ == "__main__":
 
     # DFS
     solution, history, _ = depth_first_graph_search(romania)
-    print("DFS Solution:", [(node.state, node.action) for node in solution.getPath()])
-    print("exploration history:", [node.state for node in history])
+    print("DFS Solution:", [(node.state.city, node.action) for node in solution.getPath()])
+    print("exploration history:", [node.state.city for node in history])
 
     # BFS
     solution, history, _ = breadth_first_graph_search(romania)
-    print("BFS Solution:", [(node.state, node.action) for node in solution.getPath()])
-    print("exploration history:", [node.state for node in history])
+    print("BFS Solution:", [(node.state.city, node.action) for node in solution.getPath()])
+    print("exploration history:", [node.state.city for node in history])
 
     # Iterative Deepening
     solution, history, _ = iterative_deepening_graph_search(romania)
-    print("Iterative Deepening Solution:", [(node.state, node.action) for node in solution.getPath()])
-    print("exploration history:", [node.state for node in history])
+    print("Iterative Deepening Solution:", [(node.state.city, node.action) for node in solution.getPath()])
+    print("exploration history:", [node.state.city for node in history])
 
     # Uniform cost:
     solution, history, _ = graph_search(romania, PriorityQueue(ucs))
-    print("UCS Solution:", [(node.state, node.action) for node in solution.getPath()])
-    print("exploration history:", [node.state for node in history])
+    print("UCS Solution:", [(node.state.city, node.action) for node in solution.getPath()])
+    print("exploration history:", [node.state.city for node in history])
 
     # Best first
     solution, history, _ = graph_search(romania, PriorityQueue(euclidean_distance))
-    print("Greedy Search Solution:", [(node.state, node.action) for node in solution.getPath()])
-    print("exploration history:", [node.state for node in history])
+    print("Greedy Search Solution:", [(node.state.city, node.action) for node in solution.getPath()])
+    print("exploration history:", [node.state.city for node in history])
 
     # A*
     solution, history, _ = graph_search(romania, PriorityQueue(f_euclidean))
-    print("A* Solution:", [(node.state, node.action) for node in solution.getPath()])
-    print("exploration history:", [node.state for node in history])
+    print("A* Solution:", [(node.state.city, node.action) for node in solution.getPath()])
+    print("exploration history:", [node.state.city for node in history])
     print("Path cost:", solution.path_cost)
 
     colors = ['r', 'g', 'b', 'c', 'm', 'y']
@@ -115,7 +115,10 @@ if __name__ == "__main__":
         avg_statistics.append([])
 
     for s in locations:
-        romania = NavigationProblem(s, 'B', connections, locations=locations)
+        romania = NavigationProblem(NavigationState(s, location=locations[s]),
+                                    NavigationState('B', location=locations['B']),
+                                    connections,
+                                    locations=locations)
 
         # DFS
         solution, history, max_frontier = depth_first_graph_search(romania)
