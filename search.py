@@ -220,7 +220,7 @@ class PriorityQueue:
         return not len(self.list)
 
 
-def graph_search(problem, frontier, limit_level=None):
+def graph_search(problem, frontier):
     """Search through the successors of a problem to find a goal.
     The argument frontier should be an empty queue.
     If two paths reach a state, only use the best one. [Fig. 3.18]"""
@@ -235,8 +235,6 @@ def graph_search(problem, frontier, limit_level=None):
         if node.state not in closed:
             exploration_history.append(node)
             closed.add(node.state)
-            if limit_level is not None and node.level == limit_level:
-                continue
             successors = node.expand(problem)
             for snode in successors:
                 frontier.push(snode)
