@@ -25,7 +25,8 @@ class NavigationProblem:
         # Exactly as defined in Lecture slides,
         return [("go to %s" % city,
                  connection['cost'],
-                 NavigationState(city, self.locations[city], self.goal)) for city, connection in self.graph[state.city].items()]
+                 NavigationState(city, self.locations[city], self.goal)) for city, connection in
+                self.graph[state.city].items()]
 
     def goal_test(self, state):
         return state == self.goal
@@ -101,7 +102,7 @@ class PuzzleState:
                         if 0 <= ni < self.size and 0 <= nj < self.size:
                             self.matrix[i][j], self.matrix[ni][nj] = self.matrix[ni][nj], self.matrix[i][j]
                             successors.append(("move tile " + str(self.matrix[i][j]) + " " + actions_labels[idx], 1,
-                                                PuzzleState(deepcopy(self.matrix), size=self.size)))
+                                               PuzzleState(deepcopy(self.matrix), size=self.size)))
                             self.matrix[i][j], self.matrix[ni][nj] = self.matrix[ni][nj], self.matrix[i][j]
                     i = self.size
                     break
@@ -315,9 +316,7 @@ def manhattan_distance(state):
     for i in range(state.size):
         for j in range(state.size):
             v = state.matrix[i][j]
-            if v == 0:
-                distance += abs(i - (state.size - 1)) + abs(j - (state.size - 1))
-            else:
+            if v != 0:
                 r = ceil(v / state.size) - 1
                 c = v - r * state.size - 1
                 distance += abs(i - r) + abs(j - c)
@@ -332,9 +331,7 @@ def manhattan_last_moves(state):
     for i in range(state.size):
         for j in range(state.size):
             v = state.matrix[i][j]
-            if v == 0:
-                distance += abs(i - (state.size - 1)) + abs(j - (state.size - 1))
-            else:
+            if v != 0:
                 r = ceil(v / state.size) - 1
                 c = v - r * state.size - 1
                 distance += abs(i - r) + abs(j - c)
