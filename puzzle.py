@@ -86,20 +86,20 @@ def benchmark_puzzle(title, searches=None, size=3, difficulty=-1, loop=10):
 
 if __name__ == "__main__":
 
-    puzzle = PuzzleProblem(3)
+    #puzzle = PuzzleProblem(3)
 
-    puzzle.initial = PuzzleState(matrix=np.array([[8, 5, 2], [3, 0, 4], [6, 7, 1]]))
+    #puzzle.initial = PuzzleState(matrix=np.array([[8, 5, 2], [3, 0, 4], [6, 7, 1]]))
 
-    solution, _, _ = graph_search(puzzle, PriorityQueue(ucs))
-    print(len(solution.getPath()))
-    solution, _, _ = graph_search(puzzle, PriorityQueue(f_manhattan_distance))
-    print(len(solution.getPath()))
+    #solution, _, _ = graph_search(puzzle, PriorityQueue(ucs))
+    #print(len(solution.getPath()))
+    #solution, _, _ = graph_search(puzzle, PriorityQueue(f_manhattan_distance))
+    #print(len(solution.getPath()))
     # random instances of 3x3 puzzle with all the algorithms 30 loop
     #benchmark_puzzle(title='Average time solving 30 random instances of 3x3 puzzle',
     #                 size=3, difficulty=-1, loop=30)
     # random instances of 3x3 puzzle just with manhattan heuristics
     #benchmark_puzzle(searches={'man', 'man_lm'}, title='Average time solving 100 random instances of 3x3 puzzle',
     #                 size=3, difficulty=-1, loop=50)
-    #benchmark_puzzle(search={'man', 'man_lm'}, size=3, difficulty=-1, loop=1)
+    benchmark_puzzle(title="hola", searches={'man', 'man_lm'}, size=20, difficulty=70, loop=5)
     # defined difficulty instances of 3x3-5x5 with all the algorithms
     # defined difficulty instances of 3x3-5x5 with manhattan heuristics

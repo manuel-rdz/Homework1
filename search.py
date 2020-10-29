@@ -325,21 +325,22 @@ def manhattan_distance(state):
 
 def manhattan_last_moves(state):
     distance = 0
-    a = state.size * state.size - 1
-    b = (state.size - 1) * state.size
+    sz = state.size
+    a = sz * sz - 1
+    b = (sz - 1) * sz
     col_a, row_b = 0, 0
-    for i in range(state.size):
-        for j in range(state.size):
+    for i in range(sz):
+        for j in range(sz):
             v = state.matrix[i][j]
             if v != 0:
-                r = ceil(v / state.size) - 1
-                c = v - r * state.size - 1
+                r = ceil(v / sz) - 1
+                c = v - r * sz - 1
                 distance += abs(i - r) + abs(j - c)
             if v == a:
                 col_a = j
             if v == b:
                 row_b = i
-    if col_a != state.size - 1 and row_b != state.size - 1:
+    if col_a != sz - 1 and row_b != sz - 1:
         distance += 2
     return distance
 
