@@ -6,6 +6,17 @@ import matplotlib.pyplot as plt
 import time
 
 
+# function to benchmark different configurations of puzzle size, difficulty as well as number of times to run and
+# algorithms used.
+# It generates a plot with all the information of the benchmark
+# parameters:
+# title -> string title of the plot to generate
+# searches -> set containing the code of the algorithms that we want to test
+# size -> the size of the puzzle (size, size)
+# difficulty -> represents the amount of moves to perform on the solved state to generate a unsolved puzzle config.
+# if difficulty is set to -1, it will generate a completely solvable random configuration.
+# if difficulty is set to -2, it will generate a random difficulty from (10 to 100).
+# loop -> number of times to generate a new unsolved puzzle and add it to the benchmark.
 def benchmark_puzzle(title, searches=None, size=3, difficulty=-1, loop=10):
     if searches is None:
         searches = {'ucs', 'mis', 'man', 'man_lm'}
@@ -13,11 +24,13 @@ def benchmark_puzzle(title, searches=None, size=3, difficulty=-1, loop=10):
     original_labels = ['ucs', 'A* misplaced', 'A* manhattan', 'A* manh_last_moves']
     times = [[], [], [], []]
     lengths = [[], [], [], []]
+    random_difficulty = True if difficulty == -2 else False
 
     avg_solution_length = 0
 
     for i in range(loop):
-        puzzle = PuzzleProblem(size, difficulty=difficulty)
+        d = random.randint(10, 60) if random_difficulty else difficulty
+        puzzle = PuzzleProblem(size, difficulty=d)
 
         if 'ucs' in searches:
             tic = time.perf_counter()
@@ -52,6 +65,8 @@ def benchmark_puzzle(title, searches=None, size=3, difficulty=-1, loop=10):
             print(lengths[2][-1])
             print(lengths[3][-1])
 
+        print('Solved puzzle ', i)
+
     solution_mismatch = False
     values = []
     labels = []
@@ -85,21 +100,20 @@ def benchmark_puzzle(title, searches=None, size=3, difficulty=-1, loop=10):
 
 
 if __name__ == "__main__":
-
-    #puzzle = PuzzleProblem(3)
-
-    #puzzle.initial = PuzzleState(matrix=np.array([[8, 5, 2], [3, 0, 4], [6, 7, 1]]))
-
-    #solution, _, _ = graph_search(puzzle, PriorityQueue(ucs))
-    #print(len(solution.getPath()))
-    #solution, _, _ = graph_search(puzzle, PriorityQueue(f_manhattan_distance))
-    #print(len(solution.getPath()))
     # random instances of 3x3 puzzle with all the algorithms 30 loop
-    #benchmark_puzzle(title='Average time solving 30 random instances of 3x3 puzzle',
-    #                 size=3, difficulty=-1, loop=30)
+    benchmark_puzzle(title='Average time solving 30 random instances of 3x3 puzzle',
+                     size=3, difficulty=-1, loop=30)
     # random instances of 3x3 puzzle just with manhattan heuristics
-    #benchmark_puzzle(searches={'man', 'man_lm'}, title='Average time solving 100 random instances of 3x3 puzzle',
-    #                 size=3, difficulty=-1, loop=50)
-    benchmark_puzzle(title="hola", searches={'man', 'man_lm'}, size=20, difficulty=70, loop=5)
+    benchmark_puzzle(searches={'man', 'man_lm'}, title='Average time solving 100 random instances of 3x3 puzzle',
+                     size=3, difficulty=-1, loop=100)
+
     # defined difficulty instances of 3x3-5x5 with all the algorithms
+    for i in range(3, 7):
+        benchmark_puzzle('Average time solving 30 random difficulty instances of ' + str(i) + 'x' + str(i) + ' puzzle',
+                         size=i, difficulty=-2, loop=30)
+
     # defined difficulty instances of 3x3-5x5 with manhattan heuristics
+    for i in range(6, 7):
+        benchmark_puzzle(searches={'mis', 'man', 'man_lm'},
+                         title='Average time solving 50 random difficulty instances of ' + str(i) + 'x' + str(i) + ' puzzle',
+                         size=i, difficulty=-2, loop=50)

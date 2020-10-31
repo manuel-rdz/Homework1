@@ -32,6 +32,7 @@ class NavigationProblem:
         return state == self.goal
 
 
+# State that stores city information for the romania problem
 class NavigationState:
     def __init__(self, city, location, goal=None):
         self.city = city
@@ -53,12 +54,14 @@ class PuzzleState:
         else:
             permutation = np.append(np.arange(1, size * size), 0)
             if init:
+                # if difficulty is not set, generate a valid random permutation
                 if difficulty == -1:
                     while True:
                         random.shuffle(permutation)
                         if self.__valid_permutation(permutation, size):
                             break
                 else:
+                    # from the goal configuration, add random moves
                     self.matrix = permutation.reshape((size, size))
                     for i in range(difficulty):
                         next_states = self.successors()
@@ -67,6 +70,7 @@ class PuzzleState:
                     return
             self.matrix = permutation.reshape((size, size))
 
+    # checks whether or not a random permutation is solvable
     def __valid_permutation(self, permutation, size):
         inversions = 0
         for i, v in enumerate(permutation):
@@ -243,6 +247,9 @@ def graph_search(problem, frontier):
     return None, exploration_history, None
 
 
+# Created this modified version of graph_search function for iterative deepening
+# the above version does not ensure optimality for ID because it marks nodes as visited permanently
+# for ID you need to free the visited nodes on the backtracking because you can find another path using those nodes.
 def graph_search_cycle_detection(problem, frontier, limit_level=None):
     frontier.push(Node(problem.initial, level=1))
     path = []
@@ -323,6 +330,13 @@ def manhattan_distance(state):
     return distance
 
 
+# Proposed heuristic to improve manhattan distance
+# It works with the idea that the empty tile always has to finish on the bottom right
+# So for that to happen,  the last move should be either to move the N*N-1 tile to the left or move (N - 1)*N tile up
+# So if N*N-1 tile is not already on the rightmost column and the (N-1)*N is not already on the last row, you can add
+# two to the manhattan distance.
+# This heuristic is admissible and provides more information than manhattan distance.
+# Reference: https://courses.cs.washington.edu/courses/csep573/10wi/korf96.pdf
 def manhattan_last_moves(state):
     distance = 0
     sz = state.size

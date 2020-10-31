@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+# plot the graphs used on the report
 def plot_stats(title, xlabel, ylabel, x_labels, x, legend_labels, values):
     f, ax = plt.subplots(figsize=(20, 10))
     plt.title(title)
@@ -22,6 +23,7 @@ def plot_stats(title, xlabel, ylabel, x_labels, x, legend_labels, values):
     plt.show()
 
 
+# update statistics lists for the graphs
 def update_lists(idx, nodes_expanded, solution_length, path_cost, max_frontier):
     exploration_history_sizes[idx].append(nodes_expanded)
     solution_sizes[idx].append(solution_length)
@@ -59,9 +61,6 @@ if __name__ == "__main__":
                                 connections,
                                 locations=locations)  # for A*, you will need to also provide the locations
 
-    # print(romania.successors('B'))  # [('go to S', 140, 'S'), ('go to Z', 75, 'Z'), ('go to T', 118, 'T')]
-    # TODO: apply UCS, Greedy search and A*, the heuristic being the Euclidean
-
     print("Romania Graph")
     print("Find path from Node " + romania.initial.city + " to Node " + romania.goal.city)
 
@@ -96,6 +95,7 @@ if __name__ == "__main__":
     print("exploration history:", [node.state.city for node in history])
     print("Path cost:", solution.path_cost)
 
+    # setup everything to plot the statistics
     colors = ['r', 'g', 'b', 'c', 'm', 'y']
     position = [-0.5, -0.3, -0.1, 0.1, 0.3, 0.5]
     exploration_history_sizes = []
@@ -114,6 +114,7 @@ if __name__ == "__main__":
         max_frontiers.append([])
         avg_statistics.append([])
 
+    # calculate metrics for each algorithm starting from each possible state
     for s in locations:
         romania = NavigationProblem(NavigationState(s, location=locations[s]),
                                     NavigationState('B', location=locations['B']),
@@ -139,12 +140,14 @@ if __name__ == "__main__":
         solution, history, max_frontier = graph_search(romania, PriorityQueue(f_euclidean))
         update_lists(5, len(history), len(solution.getPath()), solution.path_cost, max_frontier)
 
+    # calculate averages for each statistic
     for i in range(len(search_algorithms_labels)):
         avg_statistics[i].append(mean(exploration_history_sizes[i]))
         avg_statistics[i].append(mean(solution_sizes[i]))
         avg_statistics[i].append(mean(path_costs[i]))
         avg_statistics[i].append(mean(max_frontiers[i]))
 
+    # Create plots
     # Nodes expansion
     plot_stats("Nodes expanded by each search algorithm", "Starting state", "Nodes expanded", x_labels, x,
                search_algorithms_labels, exploration_history_sizes)
